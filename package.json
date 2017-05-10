@@ -1,0 +1,29 @@
+{
+  "name": "serviceapp",
+  "version": "1.0.0",
+  "description": "Does customer services",
+  "main": "serviceapp.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tirumalesh12/CustomerServiceBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tirumalesh12/CustomerServiceBot/issues"
+  },
+  "homepage": "https://github.com/Tirumalesh12/CustomerServiceBot#readme",
+  "dependencies": {
+    "botbuilder": "^3.8.0",
+    "client-sessions": "^0.8.0",
+    "http": "0.0.0",
+    "restify": "^4.3.0"
+  },
+  "engines": {
+    "node": "6.9.1"
+  }
+}
