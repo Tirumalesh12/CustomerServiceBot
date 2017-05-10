@@ -61,37 +61,47 @@ dialog.matches('Order', function (session, args, results) {
 	}
 })
 
-bot.dialog('/OrderReply', function (session, args, results){
-	session.send("Please provide your 10 digit order ID?");
+dialog.matches('OrderID', function (session, args, results) {
+	session.sendTyping();
+	var orderID = builder.EntityRecognizer.findEntity(args.entities, 'Order::OrderID');
+	session.userData.orderID = orderID  ? orderID.entity  : "";
+	session.beginDialog("/OrderReply");
 	session.endDialog();
 })
 
-dialog.matches('Change address', [
-function (session, args) {
+bot.dialog('/OrderReply', function (session, args, results){
+	session.send("Fetching information")
 	session.sendTyping();
-	builder.Prompts.choice(session, "It's super easy, Click on the button and let me guide you" , ['change address','Cancel']);
-},
-function(session, results){
-	if (results.response.entity != 'Cancel' ) {
-		     builder.Prompts.number(session, "Firstly provide the PIN code to check for availability of delivery");
-		}else {
-			session.send("OK, We will deliver your order to the previously saved address");
-			session.endDialog();
-		}
-},
-function(session, results){
-		if (results.response){
-		session.send("Delivery is available to this PIN");
-		builder.Prompts.text(session, "Please provide the new address separated by comma");
-		}
-},
-function(session, results){
-	if(results.response)
-	session.userData.address = results.response;
-	session.send("We have saved your address and delivers your order to this address");
-	session.endDialog();
-}
-])
+	if(session.userData.statuss != ""){
+		
+	}
+})
+
+dialog.matches('Customer Profile', function (session, args, results) {
+	session.sendTyping();
+	console.log("in issue intent");
+	var profile = builder.EntityRecognizer.findEntity(args.entities, 'Customer Profile');
+	var name = builder.EntityRecognizer.findEntity(args.entities, 'Customer Profile::Name');
+	var contact = builder.EntityRecognizer.findEntity(args.entities, 'Customer Profile::Contact');
+	var email = builder.EntityRecognizer.findEntity(args.entities, 'Customer Profile::Email');
+	var passwordd = builder.EntityRecognizer.findEntity(args.entities, 'Customer Profile::Password');
+	var address = builder.EntityRecognizer.findEntity(args.entities, 'Customer Profile::Address');
+	
+	session.userData = {
+		profile   : profile   ? profile.entity   : "",
+		name      : name      ? name.entity      : "",
+	    contact   : contact   ? contact.entity   : "",
+        passwordd : passwordd ? passwordd.entity : "",
+		email     : email     ? email.entity     : "",
+		address   : address   ? address.entity   : ""
+	}
+	session.beginDialog("/ProfileReply");
+})
+
+bot.dialog('/ProfileReply', function (session, args, results){
+	session.sendTyping();
+	session.send(session.userData.address)
+})
 
 dialog.matches('None', function (session, args) {
 	console.log ('in none intent');	
