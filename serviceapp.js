@@ -31,61 +31,37 @@ dialog.matches('Welcome', function (session, args) {
 	var username = session.message;
 	session.send("Hello " +username.address.user.name+ ". " +WishMe());
 	session.send("How can I help you?");
-	session.userData = {
-			order:  "",
-			statuss:"",
-			arrive: "",
-			orderID: "",
-			cancel:  ""
-		}
-	session.endDialog();
 });
 
-dialog.matches('Issue', function (session, args, results) {
-	if(session.userData.order !== undefined){session.dialogData = session.userData;}
-	else {
-		session.dialogData = {
-			order:  "",
-			statuss:"",
-			arrive: "",
-			orderID: "",
-			cancel:  ""
-		}
-	}
+dialog.matches('Order', function (session, args, results) {
 	session.sendTyping();
 	console.log("in issue intent");
 	var order = builder.EntityRecognizer.findEntity(args.entities, 'Order');
-	var statuss = builder.EntityRecognizer.findEntity(args.entities, 'Order::status');
-	var arrive = builder.EntityRecognizer.findEntity(args.entities, 'Order::arrive');
 	var orderID = builder.EntityRecognizer.findEntity(args.entities, 'Order::OrderID');
-	var cancel = builder.EntityRecognizer.findEntity(args.entities, 'cancel');
+	var statuss = builder.EntityRecognizer.findEntity(args.entities, 'Order::Status');
+	var track = builder.EntityRecognizer.findEntity(args.entities, 'Order::Track');
+	var details = builder.EntityRecognizer.findEntity(args.entities, 'Order::Details');
+	var cancel = builder.EntityRecognizer.findEntity(args.entities, 'Order::Cancel');
+	var returnn = builder.EntityRecognizer.findEntity(args.entities, 'Order::Return');
+	
 	session.userData = {
-		order   : order   ? order.entity   : session.dialogData.order,
-	    statuss : statuss ? order.entity   : session.dialogData.statuss,
-        arrive  : arrive  ? arrive.entity  : session.dialogData.arrive,
-        orderID : orderID ? orderID.entity : session.dialogData.orderID,
-		cancel  : cancel  ? cancel.entity  : session.dialogData.cancel
+		order    : order    ? order.entity    : "",
+		orderID  : orderID  ? orderID.entity  : "",
+	    statuss  : statuss  ? statuss.entity  : "",
+        track    : track    ? track.entity    : "",
+		details  : details  ? details.entity  : "",
+		cancel   : cancel   ? cancel.entity   : "",
+		returnn  : returnn  ? returnn.entity  : ""
 	}
 	if(session.userData.orderID == ""){
-		session.beginDialog('/Ask OrderID');
+		session.send('Please provide the orderID of your order');
+		session.endDialog();
 	}else {
-		if(session.userData.orderID.length != 10){
-			session.send("order ID you provided is not having 10 digits");
-			session.beginDialog('/Ask OrderID');
-		}else if(session.userData.cancel == ""){
-			if(session.userData.arrive != ""){
-				session.send("Your order will be arriving on Monday");
-			}
-			if (session.userData.statuss != ""){
-				session.send("The status of your order is so and so");
-			}
-		}else {
-			session.send("A request is been raised for the cancellation of your order. We will notify you any furthur.");
-		}
+		session.beginDialog("/OrderReply");
 	}
 })
 
-bot.dialog('/Ask OrderID', function (session, args, results){
+bot.dialog('/OrderReply', function (session, args, results){
 	session.send("Please provide your 10 digit order ID?");
 	session.endDialog();
 })
